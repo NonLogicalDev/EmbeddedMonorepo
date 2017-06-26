@@ -50,7 +50,7 @@ set(${CORE_LIB_NAME}_INCLUDES ${ARDUINO_INCLUDES})
 set(${CORE_LIB_NAME}_DEFINES
     "ARDUINO=300")
 
-#make_avr_library(${CORE_LIB_NAME})
+make_avr_library(${CORE_LIB_NAME})
 
 # >> Generating the firmware
 set(FW_NAME ${PROJECT_NAME})
@@ -58,7 +58,6 @@ set(${FW_NAME}_CPU  ${PROJECT_CPU})
 set(${FW_NAME}_FREQ ${PROJECT_FREQ})
 
 set(${FW_NAME}_SRCS
-    ${ARDUINO_SRCS}
     src/main.cpp
     src/App.cpp)
 
@@ -66,7 +65,9 @@ set(${FW_NAME}_INCLUDES
     ${ARDUINO_INCLUDES})
 
 set(${FW_NAME}_DEFINES
-    "ARDUINO=300")
+    "ARDUINO=10612"
+    "ARDUINO_AVR_UNO"
+    "ARDUINO_ARCH_AVR")
 
 collect_sources(${FW_NAME}_INCLUDES ${FW_NAME}_SRCS
     "${LIB_PATH}/Bounce2" "*.c" "*.cpp")
@@ -77,6 +78,6 @@ collect_sources(${FW_NAME}_INCLUDES ${FW_NAME}_SRCS
 
 message("${${FW_NAME}_SRCS}")
 
-#set(${FW_NAME}_LIBS ${CORE_LIB_NAME})
+set(${FW_NAME}_LIBS ${CORE_LIB_NAME})
 
 make_avr_firmware(${FW_NAME})

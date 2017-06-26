@@ -5,12 +5,17 @@ include(CMakeParseArguments)
 ## Platform Definition
 
 set(CMAKE_SYSTEM_NAME Generic)
+set(_CMAKE_TOOLCHAIN_PREFIX avr-)
 
-set(CMAKE_ASM_COMPILER  avr-gcc)
+
 set(CMAKE_C_COMPILER avr-gcc)
 set(CMAKE_CXX_COMPILER avr-g++)
-set(CMAKE_LINKER avr-gcc-ar)
+set(CMAKE_ASM_COMPILER avr-gcc)
+
+set(CMAKE_AR avr-gcc-ar CACHE STRING "")
+
 enable_language(ASM)
+set(ASM_DIALECT "-GAS")
 
 
 ######################################################################
@@ -117,66 +122,71 @@ endfunction()
 ######################################################################
 ## Flags
 
+# ASM Flags                                        
+#=====================================================================
+
+set(CMAKE_ASM_FLAGS              "${CFLAGS} -x assembler-with-cpp")
+
 # C Flags                                        
 #=====================================================================
 if(NOT DEFINED AVR_C_FLAGS)
-  set(AVR_C_FLAGS "-mcall-prologues -ffunction-sections -fdata-sections")
+  set(AVR_C_FLAGS "-std=gnu11 -ffunction-sections -fdata-sections -MMD  -fno-fat-lto-objects")
 endif()
 
-set(CMAKE_ASM_FLAGS              "-g -Os -x assemble-with-cpp ${AVR_C_FLAGS}"    CACHE STRING "")
 
-set(CMAKE_C_FLAGS                "-g -Os       ${AVR_C_FLAGS}"    CACHE STRING "")
-set(CMAKE_C_FLAGS_DEBUG          "-g           ${AVR_C_FLAGS}"    CACHE STRING "")
-set(CMAKE_C_FLAGS_MINSIZEREL     "-Os -DNDEBUG ${AVR_C_FLAGS}"    CACHE STRING "")
-set(CMAKE_C_FLAGS_RELEASE        "-Os -DNDEBUG -w ${AVR_C_FLAGS}" CACHE STRING "")
-set(CMAKE_C_FLAGS_RELWITHDEBINFO "-Os -g       -w ${AVR_C_FLAGS}" CACHE STRING "")
+set(CMAKE_C_FLAGS                "-g -Os ${AVR_C_FLAGS}" CACHE STRING "")
+# set(CMAKE_C_FLAGS_DEBUG          "-g              ${AVR_C_FLAGS}" CACHE STRING "")
+# set(CMAKE_C_FLAGS_MINSIZEREL     "-Os -DNDEBUG    ${AVR_C_FLAGS}" CACHE STRING "")
+# set(CMAKE_C_FLAGS_RELEASE        "-Os -DNDEBUG -w ${AVR_C_FLAGS}" CACHE STRING "")
+# set(CMAKE_C_FLAGS_RELWITHDEBINFO "-Os -g       -w ${AVR_C_FLAGS}" CACHE STRING "")
 
 # C++ Flags                                       
 #=====================================================================
 if(NOT DEFINED AVR_CXX_FLAGS)
-  set(AVR_CXX_FLAGS "${AVR_C_FLAGS} -fno-exceptions")
+  set(AVR_CXX_FLAGS "-std=gnu++11 -fpermissive -fno-exceptions -ffunction-sections -fdata-sections -fno-threadsafe-statics -MMD ")
 endif()
 
-set(CMAKE_CXX_FLAGS                "-g -Os       ${AVR_CXX_FLAGS}" CACHE STRING "")
-set(CMAKE_CXX_FLAGS_DEBUG          "-g           ${AVR_CXX_FLAGS}" CACHE STRING "")
-set(CMAKE_CXX_FLAGS_MINSIZEREL     "-Os -DNDEBUG ${AVR_CXX_FLAGS}" CACHE STRING "")
-set(CMAKE_CXX_FLAGS_RELEASE        "-Os -DNDEBUG ${AVR_CXX_FLAGS}" CACHE STRING "")
-set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-Os -g       ${AVR_CXX_FLAGS}" CACHE STRING "")
+set(CMAKE_CXX_FLAGS                  "-g -Os       ${AVR_CXX_FLAGS}" CACHE STRING "")
+# set(CMAKE_CXX_FLAGS_DEBUG          "-g           ${AVR_CXX_FLAGS}" CACHE STRING "")
+# set(CMAKE_CXX_FLAGS_MINSIZEREL     "-Os -DNDEBUG ${AVR_CXX_FLAGS}" CACHE STRING "")
+# set(CMAKE_CXX_FLAGS_RELEASE        "-Os -DNDEBUG ${AVR_CXX_FLAGS}" CACHE STRING "")
+# set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-Os -g       ${AVR_CXX_FLAGS}" CACHE STRING "")
 
 # Executable Linker Flags
 #=====================================================================
 if(NOT DEFINED AVR_EXE_LINKER_FLAGS)
+  set(AVR_EXE_LINKER_FLAGS "-fuse-linker-plugin -Wl,--gc-sections")
   # set(AVR_EXE_LINKER_FLAGS "-lc -lm")
-  set(AVR_EXE_LINKER_FLAGS "-lm")
+  # set(AVR_EXE_LINKER_FLAGS "-lm")
   # set(AVR_EXE_LINKER_FLAGS "-Wl,--gc-sections,--print-gc-sections -lm -lc")
   # set(AVR_EXE_LINKER_FLAGS "-Wl,--gc-sections,--print-gc-sections -lm -lc")
 endif()
 
-set(CMAKE_EXE_LINKER_FLAGS                "${AVR_EXE_LINKER_FLAGS}" CACHE STRING "")
-set(CMAKE_EXE_LINKER_FLAGS_DEBUG          "${AVR_EXE_LINKER_FLAGS}" CACHE STRING "")
-set(CMAKE_EXE_LINKER_FLAGS_MINSIZEREL     "${AVR_EXE_LINKER_FLAGS}" CACHE STRING "")
-set(CMAKE_EXE_LINKER_FLAGS_RELEASE        "${AVR_EXE_LINKER_FLAGS}" CACHE STRING "")
-set(CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO "${AVR_EXE_LINKER_FLAGS}" CACHE STRING "")
+set(CMAKE_EXE_LINKER_FLAGS                  "${AVR_EXE_LINKER_FLAGS}" CACHE STRING "")
+# set(CMAKE_EXE_LINKER_FLAGS_DEBUG          "${AVR_EXE_LINKER_FLAGS}" CACHE STRING "")
+# set(CMAKE_EXE_LINKER_FLAGS_MINSIZEREL     "${AVR_EXE_LINKER_FLAGS}" CACHE STRING "")
+# set(CMAKE_EXE_LINKER_FLAGS_RELEASE        "${AVR_EXE_LINKER_FLAGS}" CACHE STRING "")
+# set(CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO "${AVR_EXE_LINKER_FLAGS}" CACHE STRING "")
 
 # Shared Lbrary Linker Flags
 #=====================================================================
 if(NOT DEFINED AVR_LIB_LINKER_FLAGS)
-  set(AVR_LIB_LINKER_FLAGS "-lm")
+  set(AVR_LIB_LINKER_FLAGS "-fuse-linker-plugin -Wl,--gc-sections")
   # set(AVR_LIB_LINKER_FLAGS "-lc -lm")
   # set(AVR_LIB_LINKER_FLAGS "-Wl,--gc-sections,--print-gc-sections -lm -lc")
 endif()
 
 set(CMAKE_SHARED_LINKER_FLAGS                "${AVR_LIB_LINKER_FLAGS}" CACHE STRING "")
-set(CMAKE_SHARED_LINKER_FLAGS_DEBUG          "${AVR_LIB_LINKER_FLAGS}" CACHE STRING "")
-set(CMAKE_SHARED_LINKER_FLAGS_MINSIZEREL     "${AVR_LIB_LINKER_FLAGS}" CACHE STRING "")
-set(CMAKE_SHARED_LINKER_FLAGS_RELEASE        "${AVR_LIB_LINKER_FLAGS}" CACHE STRING "")
-set(CMAKE_SHARED_LINKER_FLAGS_RELWITHDEBINFO "${AVR_LIB_LINKER_FLAGS}" CACHE STRING "")
+# set(CMAKE_SHARED_LINKER_FLAGS_DEBUG          "${AVR_LIB_LINKER_FLAGS}" CACHE STRING "")
+# set(CMAKE_SHARED_LINKER_FLAGS_MINSIZEREL     "${AVR_LIB_LINKER_FLAGS}" CACHE STRING "")
+# set(CMAKE_SHARED_LINKER_FLAGS_RELEASE        "${AVR_LIB_LINKER_FLAGS}" CACHE STRING "")
+# set(CMAKE_SHARED_LINKER_FLAGS_RELWITHDEBINFO "${AVR_LIB_LINKER_FLAGS}" CACHE STRING "")
 
 set(CMAKE_MODULE_LINKER_FLAGS                "${AVR_LIB_LINKER_FLAGS}" CACHE STRING "")
-set(CMAKE_MODULE_LINKER_FLAGS_DEBUG          "${AVR_LIB_LINKER_FLAGS}" CACHE STRING "")
-set(CMAKE_MODULE_LINKER_FLAGS_MINSIZEREL     "${AVR_LIB_LINKER_FLAGS}" CACHE STRING "")
-set(CMAKE_MODULE_LINKER_FLAGS_RELEASE        "${AVR_LIB_LINKER_FLAGS}" CACHE STRING "")
-set(CMAKE_MODULE_LINKER_FLAGS_RELWITHDEBINFO "${AVR_LIB_LINKER_FLAGS}" CACHE STRING "")
+# set(CMAKE_MODULE_LINKER_FLAGS_DEBUG          "${AVR_LIB_LINKER_FLAGS}" CACHE STRING "")
+# set(CMAKE_MODULE_LINKER_FLAGS_MINSIZEREL     "${AVR_LIB_LINKER_FLAGS}" CACHE STRING "")
+# set(CMAKE_MODULE_LINKER_FLAGS_RELEASE        "${AVR_LIB_LINKER_FLAGS}" CACHE STRING "")
+# set(CMAKE_MODULE_LINKER_FLAGS_RELWITHDEBINFO "${AVR_LIB_LINKER_FLAGS}" CACHE STRING "")
 
 # Arduino Settings                                    
 #=====================================================================
