@@ -51,10 +51,10 @@ WaveCycle waveCycleSM(&strip, 0, 0, 31,  31, 0, 0,  20);
 
 void setup() {
   EEPROM.get(0, mem_map);
-  if (mem_map.magic[0] == 'L'
-      && mem_map.magic[1] == 'E'
-      && mem_map.magic[2] == 'D'
-      && mem_map.magic[3] == 'S') {
+  if (mem_map.magic[0] == 'L' &&
+      mem_map.magic[1] == 'E' &&
+      mem_map.magic[2] == 'D' &&
+      mem_map.magic[3] == 'S') {
     mode.set(mem_map.mode % NUM_MODES);
   } else {
     mode.set(0);

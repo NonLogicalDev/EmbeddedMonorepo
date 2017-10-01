@@ -1,5 +1,7 @@
 PNAME=LEDStrip
 UART_DEV=/dev/tty.usbserial-A600IAYT
+MCU=atmega328p
+BAUD_RATE=57600
 
 init:
 	rm -rf build
@@ -12,7 +14,7 @@ build:
 rebuild: init build
 
 upload:
-	avrdude -V -c arduino -b 57600 -P ${UART_DEV} -p atmega328p -U flash:w:build/${PNAME}.hex:i
-	avrdude -V -c arduino -b 57600 -P ${UART_DEV} -p atmega328p -U eeprom:w:build/${PNAME}.eep:i
+	avrdude -V -c arduino -b ${BAUD_RATE} -P ${UART_DEV} -p ${MCU} -U flash:w:build/${PNAME}.hex:i
+	avrdude -V -c arduino -b ${BAUD_RATE} -P ${UART_DEV} -p ${MCU} -U eeprom:w:build/${PNAME}.eep:i
 
 .PHONY: build
