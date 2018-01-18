@@ -1,6 +1,5 @@
 #include "App.h"
 
-
 // fill the dots one after the other with said color
 // good for testing purposes
 //void colorWipe(uint16_t c, int wait) {

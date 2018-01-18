@@ -1,16 +1,17 @@
 function(collect_sources INC_VAR SRC_VAR DIR)
-  set(GLB)
-  math(EXPR ARGCM1 "${ARGC} - 1")
+  file(GLOB_RECURSE sources ${DIR}/*.cpp ${DIR}/*.S ${DIR}/*.c)
+  file(GLOB_RECURSE headers ${DIR}/*.h ${DIR}/*.hpp)
 
-  foreach(I RANGE 3 ${ARGCM1})
-    list(APPEND GLB "${DIR}/${ARGV${I}}")
-  endforeach(I)
+  string(REGEX REPLACE "examples?/.*" "" sources "${sources}")
+  string(REGEX REPLACE "examples?/.*" "" headers "${headers}")
 
-  set(${INC_VAR} ${${INC_VAR}} ${DIR} PARENT_SCOPE)
-
-  if (GLB)
-    file(GLOB_RECURSE INC_SRCS ${GLB})
-  endif ()
-
-  set(${SRC_VAR} ${${SRC_VAR}} ${INC_SRCS} PARENT_SCOPE)
+  set(INCLUDE_PATHS)
+  foreach (header ${headers}) 
+    get_filename_component(dir ${header} PATH)
+    list(APPEND INCLUDE_PATHS ${dir})
+  endforeach()
+  list(REMOVE_DUPLICATES INCLUDE_PATHS)
+  
+  set(${INC_VAR} ${${INC_VAR}} ${INCLUDE_PATHS} PARENT_SCOPE)
+  set(${SRC_VAR} ${${SRC_VAR}} ${sources} PARENT_SCOPE)
 endfunction()
